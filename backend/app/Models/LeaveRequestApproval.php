@@ -10,6 +10,27 @@ class LeaveRequestApproval extends Model
 {
     use HasFactory;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Approval Levels
+    |--------------------------------------------------------------------------
+    */
+
+    public const LEVEL_SUPERVISOR = 1;
+    public const LEVEL_HR = 2;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Statuses
+    |--------------------------------------------------------------------------
+    */
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CANCELLED = 'cancelled';
+
+
     protected $fillable = [
         'leave_request_id',
         'approver_id',
@@ -19,6 +40,7 @@ class LeaveRequestApproval extends Model
         'acted_at',
     ];
 
+
     protected function casts(): array
     {
         return [
@@ -27,10 +49,14 @@ class LeaveRequestApproval extends Model
         ];
     }
 
+
     public function leaveRequest(): BelongsTo
     {
-        return $this->belongsTo(LeaveRequest::class);
+        return $this->belongsTo(
+            LeaveRequest::class
+        );
     }
+
 
     public function approver(): BelongsTo
     {

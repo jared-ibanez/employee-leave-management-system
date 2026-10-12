@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LeaveBalanceController;
+use App\Http\Controllers\Api\LeaveRequestController;
+use App\Http\Controllers\Api\LeaveTypeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SupervisorApprovalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +31,12 @@ Route::middleware([
     'active.user',
 ])->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/me', [
         AuthController::class,
         'me',
@@ -39,28 +50,92 @@ Route::middleware([
 
     /*
     |--------------------------------------------------------------------------
-    | Employee Test
+    | Leave Reference Data
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('role:employee')
-        ->get('/employee-test', function () {
-            return response()->json([
-                'message' => 'Employee access granted.',
-            ]);
-        });
+    Route::get('/leave-types', [
+        LeaveTypeController::class,
+        'index',
+    ]);
+
+    Route::get('/leave-balances', [
+        LeaveBalanceController::class,
+        'index',
+    ]);
 
 
     /*
     |--------------------------------------------------------------------------
-    | HR Admin Test
+    | Leave Requests
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('role:hr_admin')
-        ->get('/admin-test', function () {
-            return response()->json([
-                'message' => 'Administrator access granted.',
-            ]);
+    Route::get('/leave-requests', [
+        LeaveRequestController::class,
+        'index',
+    ]);
+
+    Route::post('/leave-requests', [
+        LeaveRequestController::class,
+        'store',
+    ]);
+
+    Route::get('/leave-requests/{leaveRequest}', [
+        LeaveRequestController::class,
+        'show',
+    ]);
+
+    Route::post(
+        '/leave-requests/{leaveRequest}/cancel',
+        [
+            LeaveRequestController::class,
+            'cancel',
+        ]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Supervisor
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware(
+        'role:supervisor'
+    )
+        ->prefix('supervisor')
+        ->group(function () {
+
+            Route::get(
+                '/approvals',
+                [
+                    SupervisorApprovalController::class,
+                    'index',
+                ]
+            );
+
+            Route::get(
+                '/approvals/{approval}',
+                [
+                    SupervisorApprovalController::class,
+                    'show',
+                ]
+            );
+
+            Route::post(
+                '/approvals/{approval}/approve',
+                [
+                    SupervisorApprovalController::class,
+                    'approve',
+                ]
+            );
+
+            Route::post(
+                '/approvals/{approval}/reject',
+                [
+                    SupervisorApprovalController::class,
+                    'reject',
+                ]
+            );
         });
 });

@@ -11,6 +11,12 @@ class LeaveRequest extends Model
 {
     use HasFactory;
 
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CANCELLED = 'cancelled';
+
     protected $fillable = [
         'employee_id',
         'leave_type_id',
